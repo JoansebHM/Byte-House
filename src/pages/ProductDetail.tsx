@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ImageModal from "../components/UI/ImageModal";
 import { PRODUCTS } from "../data/mockData";
 
+const phoneNumber = "3167350332";
+
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const ProductDetail = () => {
         );
     }
 
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
         `Hola, me gustaría más información sobre ${product.name} (ID: ${product.id})`
     )}`;
 
