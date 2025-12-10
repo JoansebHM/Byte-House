@@ -68,6 +68,275 @@ export const PRODUCTS: Product[] = [
     },
     {
         id: "4",
+        name: "Monitor 4K 144Hz",
+        price: 450,
+        description: "Panel IPS de 27 pulgadas con HDR y tasa de refresco ultra rápida.",
+        category: "Monitores",
+        brand: "Samsung",
+        images: [
+            "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 5,
+    },
+    {
+        id: "5",
+        name: "Teclado Mecánico RGB",
+        price: 120,
+        description: "Switches Cherry MX Blue, chasis de aluminio y macros programables.",
+        category: "Periféricos",
+        brand: "Razer",
+        images: [
+            "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 20,
+    },
+    {
+        id: "6",
+        name: "Mouse Wireless Pro",
+        price: 89,
+        description: "Sensor óptico de 25K DPI, peso ultraligero y 70h de batería.",
+        category: "Periféricos",
+        brand: "Logitech",
+        images: [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1615663245857-acda847b8e38?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 15,
+    },
+    {
+        id: "7",
+        name: "RTX 4090 Ti",
+        price: 1999,
+        description: "La tarjeta gráfica más potente del mundo. 24GB GDDR6X.",
+        category: "Componentes",
+        brand: "Nvidia",
+        images: [
+            "https://images.unsplash.com/photo-1591488320449-011701bb6704?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1555618568-9b1979313cb1?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 2,
+    },
+    {
+        id: "8",
+        name: "Silla Gamer Elite",
+        price: 299,
+        description: "Ergonomía superior, soporte lumbar 4D y cuero sintético premium.",
+        category: "Accesorios",
+        brand: "Razer",
+        images: [
+            "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1616894082729-28562d2948c2?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 8,
+    },
+    {
+        id: "9",
+        name: "Laptop Creator Zen",
+        price: 1499,
+        description: "Pantalla OLED táctil, Ryzen 9 y diseño ultra delgado.",
+        category: "Laptops",
+        brand: "Asus",
+        images: [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 10,
+    },
+    {
+        id: "10",
+        name: "Headset 7.1 Surround",
+        price: 150,
+        description: "Sonido envolvente, micrófono con cancelación de ruido y comodidad total.",
+        category: "Periféricos",
+        brand: "Sony",
+        images: [
+            "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 25,
+    },
+    {
+        id: "11",
+        name: "Gabinete Mid-Tower Glass",
+        price: 110,
+        description: "Vidrio templado, excelente flujo de aire y espacio para refrigeración líquida.",
+        category: "Componentes",
+        brand: "Asus",
+        images: [
+            "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 12,
+    },
+    {
+        id: "12",
+        name: "SSD NVMe 2TB",
+        price: 180,
+        description: "Velocidades de lectura de hasta 7000 MB/s. Gen 4.",
+        category: "Componentes",
+        brand: "Samsung",
+        images: [
+            "https://images.unsplash.com/photo-1628557118736-d31317ba9515?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 50,
+    },
+    {
+        id: "13",
+        name: "Webcam Streaming 4K",
+        price: 200,
+        description: "Calidad DSLR, sensor grande y conexión USB-C.",
+        category: "Periféricos",
+        brand: "Logitech",
+        images: [
+            "https://images.unsplash.com/photo-1605773527852-c546a8584ea3?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 18,
+    },
+    {
+        id: "14",
+        name: "Motherboard Z790 WiFi",
+        price: 350,
+        description: "Soporte DDR5, PCIe 5.0 y diseño térmico avanzado.",
+        category: "Componentes",
+        brand: "Asus",
+        images: [
+            "https://images.unsplash.com/photo-1544652478-6653e09f18a2?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 7,
+    },
+    {
+        id: "15",
+        name: "Tablet Pro 12.9",
+        price: 1099,
+        description: "Chip M2, pantalla Liquid Retina XDR y soporte para Pencil.",
+        category: "Laptops",
+        brand: "Samsung",
+        images: [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 15,
+    },
+    {
+        id: "16",
+        name: "Micrófono Condensador USB",
+        price: 130,
+        description: "Patrones polares múltiples, ideal para podcast y streaming.",
+        category: "Periféricos",
+        brand: "Sony",
+        images: [
+            "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 22,
+    },
+    {
+        id: "17",
+        name: "Kit Memoria RAM 32GB RGB",
+        price: 160,
+        description: "DDR5 6000MHz, latencia baja y sincronización RGB.",
+        category: "Componentes",
+        brand: "Razer",
+        images: [
+            "https://images.unsplash.com/photo-1562976540-1502c2145186?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 30,
+    },
+    {
+        id: "18",
+        name: "Control Gamepad Wireless",
+        price: 60,
+        description: "Diseño asimétrico, vibración háptica y compatibilidad multi-plataforma.",
+        category: "Accesorios",
+        brand: "Logitech",
+        images: [
+            "https://images.unsplash.com/photo-1600080972464-8e5f35f63d88?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 40,
+    },
+    {
+        id: "19",
+        name: "Refrigeración Líquida 360mm",
+        price: 180,
+        description: "Bomba silenciosa, fans ARGB y display LCD personalizable.",
+        category: "Componentes",
+        brand: "Asus",
+        images: [
+            "https://images.unsplash.com/photo-1555685812-4b7430165507?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 10,
+    },
+    {
+        id: "20",
+        name: "Laptop Business Elite",
+        price: 1200,
+        description: "Seguridad biométrica, autonomía de 15h y chasis de magnesio.",
+        category: "Laptops",
+        brand: "Samsung",
+        images: [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 12,
+    },
+    {
+        id: "21",
+        name: "Docking Station USB-C",
+        price: 90,
+        description: "Expansión 12-en-1, salida HDMI 4K y carga PD 100W.",
+        category: "Accesorios",
+        brand: "Sony",
+        images: [
+            "https://images.unsplash.com/photo-1624696057776-90bb598fe370?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 25,
+    },
+    {
+        id: "22",
+        name: "Router Gaming WiFi 6",
+        price: 250,
+        description: "Priorización de paquetes, banda triple y cobertura extendida.",
+        category: "Accesorios",
+        brand: "Asus",
+        images: [
+            "https://images.unsplash.com/photo-1632213702844-1e0606d936d3?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 8,
+    },
+    {
+        id: "23",
+        name: "Combo Mouse + Pad",
+        price: 75,
+        description: "Set competitivo con mouse ligero y superficie de control.",
+        category: "Periféricos",
+        brand: "Razer",
+        images: [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 18,
+    },
+    {
+        id: "24",
+        name: "Fuente de Poder 850W",
+        price: 140,
+        description: "Certificación 80+ Gold, modular y capacitores japoneses.",
+        category: "Componentes",
+        brand: "Corsair", // Adding a brand dynamically if needed, or sticking to existing
+        images: [
+            "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 15,
+    },
+    {
+        id: "25",
+        name: "Smartphone Flagship",
+        price: 999,
+        description: "Cámaras profesionales, pantalla 120Hz y procesador top tier.",
+        category: "Accesorios",
+        brand: "Samsung",
+        images: [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1000&auto=format&fit=crop"
+        ],
+        stock: 30,
+    },
+    {
+        id: "4",
         name: "Mouse Gamer Pro",
         price: 59.99,
         description: "Sensor óptico 25K, peso ligero, cable mallado.",

@@ -35,8 +35,17 @@ function Home() {
     }
   }, [loading]);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  // ... (keeping effect)
+
   // Filtering Logic
   const filteredProducts = useMemo(() => {
+    // Reset page to 1 when filters change (implicitly handled if depend on filters)
+    // We'll add an effect or just rely on the fact that if filters change, we want to see results from page 1? 
+    // Actually better to have an effect to reset currentPage
     return PRODUCTS.filter((product) => {
       // 1. Search (Name, Description, Category)
       const term = searchTerm.toLowerCase();
@@ -65,6 +74,25 @@ function Home() {
       return true;
     });
   }, [searchTerm, selectedCategory, priceRange, selectedBrands]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, priceRange, selectedBrands]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex flex-col transition-colors duration-300">
@@ -96,12 +124,37 @@ function Home() {
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
           {/* Results */}
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+          {paginatedProducts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
+                  >
+                    PREV
+                  </button>
+                  <span className="font-bold">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
+                  >
+                    NEXT
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center border border-black dark:border-white border-dashed">
               <Frown size={64} className="mb-4 text-gray-400" />

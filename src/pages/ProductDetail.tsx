@@ -30,7 +30,7 @@ const ProductDetail = () => {
     }
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-        `Hola, me gustaría más información sobre ${product.id} - **${product.name}**`
+        `Hola, me gustaría más información sobre ${product.id} - *${product.name}*`
     )}`;
 
     return (
