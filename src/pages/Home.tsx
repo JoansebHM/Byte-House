@@ -24,10 +24,6 @@ function Home() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   // Cuando el loading termine, activar la salida del preloader
-  useState(() => {
-    // Note: usePreloader logic handles context now, so this local effect might need simplification
-    // But keeping existing logic structure for animation sync
-  });
   // Re-syncing effect from original Home.tsx correctly
   // The hook returns 'loading' boolean.
   useEffect(() => {
