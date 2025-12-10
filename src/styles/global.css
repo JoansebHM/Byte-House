@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Geist:wght@100..900&family=Oswald:wght@200..700&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Geist:wght@100..900&family=Inconsolata:wght@200..900&family=Oswald:wght@200..700&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-dark: #000;
+  --color-light: #fff;
+
+  --font-bitcount: "Bitcount Grid Double", sans-serif;
+  --font-geist: "Geist", sans-serif;
+  --font-inconsolata: "Inconsolata", monospace;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply bg-black text-white;
+  }
+}
