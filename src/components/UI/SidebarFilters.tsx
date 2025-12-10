@@ -1,5 +1,6 @@
 import { CATEGORIES, BRANDS } from "../../data/mockData";
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface SidebarFiltersProps {
     selectedCategory: string | null;
@@ -41,8 +42,8 @@ const SidebarFilters = ({
         onPriceChange([localMin, val]);
     };
 
-    return (
-        <aside className="w-full md:w-64 flex-shrink-0 space-y-8 text-black dark:text-white">
+    const FilterContent = () => (
+        <div className="space-y-8">
             <div>
                 <h3 className="font-bold text-xl mb-4 border-b border-black dark:border-white pb-2">
                     CATEGORIAS
@@ -139,6 +140,28 @@ const SidebarFilters = ({
                         </label>
                     ))}
                 </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <aside className="w-full md:w-64 flex-shrink-0 text-black dark:text-white">
+            {/* Mobile View - Collapsible */}
+            <div className="md:hidden mb-8">
+                <details className="group border border-black dark:border-white bg-transparent">
+                    <summary className="flex cursor-pointer items-center justify-between p-4 font-bold text-lg select-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+                        <span>FILTROS</span>
+                        <ChevronDown className="transition-transform duration-300 group-open:rotate-180" size={20} />
+                    </summary>
+                    <div className="p-4 border-t border-black dark:border-white bg-gray-50 dark:bg-gray-900/50">
+                        <FilterContent />
+                    </div>
+                </details>
+            </div>
+
+            {/* Desktop View - Always Open */}
+            <div className="hidden md:block">
+                <FilterContent />
             </div>
         </aside>
     );
