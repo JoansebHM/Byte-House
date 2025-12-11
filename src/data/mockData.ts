@@ -24,6 +24,7 @@ export const BRANDS = [
     "Nvidia",
     "Sony",
     "Razer",
+    "MSI"
 ];
 
 export const PRODUCTS: Product[] = [

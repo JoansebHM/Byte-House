@@ -20,7 +20,7 @@ const SidebarFilters = ({
     onToggleBrand,
 }: SidebarFiltersProps) => {
     const min = 0;
-    const max = 3000;
+    const max = 5000000;
     const [localMin, setLocalMin] = useState(priceRange[0]);
     const [localMax, setLocalMax] = useState(priceRange[1]);
 

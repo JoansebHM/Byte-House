@@ -1,52 +1,34 @@
 import { useState, useMemo, useEffect } from "react";
-import Preloader from "../components/UI/Preloader";
-import { usePreloader } from "../hooks/usePreloader";
 import ProductCard from "../components/UI/ProductCard";
 import FloatingWhatsApp from "../components/UI/FloatingWhatsApp";
-import { PRODUCTS } from "../data/mockData";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import SidebarFilters from "../components/UI/SidebarFilters";
 import SearchBar from "../components/UI/SearchBar";
 import ReviewsSection from "../components/UI/ReviewsSection";
 import { Frown } from "lucide-react";
+import useFetchData from "../hooks/useFetchData";
+import { url } from "../data/constants";
+import type { Product } from "../types/product.type";
 
 function Home() {
-  const loading = usePreloader(5000);
-  const [preloaderExiting, setPreloaderExiting] = useState(false);
-  // Initialize showPreloader based on the initial loading state to prevent flash
-  const [showPreloader, setShowPreloader] = useState(loading);
+  const { data, loading, error } = useFetchData<Product[]>(url);
 
   // Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000000]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-
-  // Cuando el loading termine, activar la salida del preloader
-  // Re-syncing effect from original Home.tsx correctly
-  // The hook returns 'loading' boolean.
-  useEffect(() => {
-    if (!loading) {
-      setPreloaderExiting(true);
-      setTimeout(() => {
-        setShowPreloader(false);
-      }, 1000);
-    }
-  }, [loading]);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  // ... (keeping effect)
-
   // Filtering Logic
   const filteredProducts = useMemo(() => {
-    // Reset page to 1 when filters change (implicitly handled if depend on filters)
-    // We'll add an effect or just rely on the fact that if filters change, we want to see results from page 1? 
-    // Actually better to have an effect to reset currentPage
-    return PRODUCTS.filter((product) => {
+    if (!data) return [];
+
+    return data.filter((product) => {
       // 1. Search (Name, Description, Category)
       const term = searchTerm.toLowerCase();
       const matchesSearch =
@@ -67,13 +49,16 @@ function Home() {
       }
 
       // 4. Brands
-      if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
+      if (
+        selectedBrands.length > 0 &&
+        !selectedBrands.includes(product.brand)
+      ) {
         return false;
       }
 
       return true;
     });
-  }, [searchTerm, selectedCategory, priceRange, selectedBrands]);
+  }, [data, searchTerm, selectedCategory, priceRange, selectedBrands]);
 
   // Reset pagination when filters change
   useEffect(() => {
@@ -90,16 +75,32 @@ function Home() {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-black dark:border-white"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Error loading products</h2>
+          <p className="text-gray-500">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex flex-col transition-colors duration-300">
       <Navbar />
-
-      {/* Preloader */}
-      {showPreloader && <Preloader isExiting={preloaderExiting} />}
 
       <FloatingWhatsApp />
 
@@ -163,8 +164,9 @@ function Home() {
               </h3>
               <p className="text-gray-500 max-w-md">
                 Intentaste buscar "{searchTerm}" en{" "}
-                {selectedCategory || "todas las categorías"} y rango de precios ${priceRange[0]} - ${priceRange[1]}. Prueba con otros
-                términos o limpia los filtros.
+                {selectedCategory || "todas las categorías"} y rango de precios
+                ${priceRange[0]} - ${priceRange[1]}. Prueba con otros términos o
+                limpia los filtros.
               </p>
               <button
                 onClick={() => {
