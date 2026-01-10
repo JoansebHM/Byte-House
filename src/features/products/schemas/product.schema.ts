@@ -21,6 +21,7 @@ export const ProductSchema = object({
     object({
       id: number(),
       image_url: string(),
+      is_main: boolean(),
     })
   ),
 });

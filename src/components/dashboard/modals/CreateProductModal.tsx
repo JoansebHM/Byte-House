@@ -7,6 +7,8 @@ import { generateSlug } from "../../../utils/slug";
 import { useBrands } from "../../../features/brands/hooks/useBrands";
 import { useCategories } from "../../../features/categories/hooks/useCategories";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import ImageGalery from "./ImageGalery";
 
 interface ProductModalProps {
   onClose: () => void;
@@ -14,6 +16,8 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ onClose, product }: ProductModalProps) => {
+  const [galeryOpen, setGalleryOpen] = useState(false);
+
   const queryClient = useQueryClient();
   const {
     register,
@@ -63,6 +67,10 @@ const ProductModal = ({ onClose, product }: ProductModalProps) => {
     }
 
     await queryClient.invalidateQueries({ queryKey: ["products"] });
+  };
+
+  const openGalery = () => {
+    setGalleryOpen(true);
   };
 
   return (
@@ -199,6 +207,10 @@ const ProductModal = ({ onClose, product }: ProductModalProps) => {
             )}
           </div>
 
+          <button type="button" onClick={openGalery}>
+            Abrir Galeria de Imágenes (Próximamente)
+          </button>
+
           <div className="flex gap-4 mt-8 pt-4">
             <button
               type="button"
@@ -216,6 +228,10 @@ const ProductModal = ({ onClose, product }: ProductModalProps) => {
           </div>
         </form>
       </div>
+
+      {galeryOpen && (
+        <ImageGalery onClose={() => setGalleryOpen(false)} product={product} />
+      )}
     </div>
   );
 };
