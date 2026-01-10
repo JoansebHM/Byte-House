@@ -4,6 +4,9 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import FAQ from "../pages/FAQ";
 import ProductDetail from "../pages/ProductDetail";
+import Login from "../pages/Login";
+import NotFound from "../pages/NotFound";
+import Dashboard from "../pages/Dashboard";
 
 function Index() {
   return (
@@ -13,8 +16,10 @@ function Index() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="*" element={<>Page not found</>} />
+        <Route path="/product/:slug" element={<ProductDetail />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

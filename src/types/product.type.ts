@@ -8,3 +8,10 @@ export type Product = {
   images?: string[];
   stock: number;
 };
+
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+}

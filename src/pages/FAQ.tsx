@@ -10,7 +10,7 @@ const FAQ = () => {
             <Navbar />
             <FloatingWhatsApp />
 
-            <main className="flex-grow container mx-auto px-4 py-16 max-w-4xl">
+            <main className="grow container mx-auto px-4 py-16 max-w-4xl">
                 <h1 className="text-4xl md:text-6xl font-light font-bitcount mb-16 text-center tracking-widest uppercase">
                     Preguntas Frecuentes
                 </h1>

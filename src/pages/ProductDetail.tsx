@@ -2,16 +2,15 @@ import { ArrowLeft, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageModal from "../components/UI/ImageModal";
-import useFetchData from "../hooks/useFetchData";
-import { url } from "../data/constants";
+import { useProduct } from "../features/products/hooks/useProduct";
 
 const phoneNumber = "3003138134";
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
+  const { data: product, error, isLoading: loading } = useProduct(slug || "");
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: products, loading, error } = useFetchData(url);
 
   if (loading) {
     return (
@@ -31,10 +30,6 @@ const ProductDetail = () => {
       </div>
     );
   }
-
-  const product = products && products.find((p) => p.id === id);
-
-  console.log({ product });
 
   if (!product) {
     return (
@@ -74,20 +69,20 @@ const ProductDetail = () => {
             className="aspect-square w-full border border-black dark:border-white overflow-hidden cursor-pointer group"
           >
             <img
-              src={product.images?.[0] || ""}
+              src={product.product_images?.[0].image_url || ""}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {product.images?.map((img, idx) => (
+            {product.product_images?.map((imgObj, idx) => (
               <div
                 key={idx}
                 onClick={() => setIsModalOpen(true)}
                 className="aspect-square border border-black dark:border-white overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
               >
                 <img
-                  src={img}
+                  src={imgObj.image_url}
                   alt={`${product.name} ${idx + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -96,11 +91,10 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Info */}
         <div className="space-y-6">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              {product.category}
+              {product.categories?.name}
             </span>
             <h1 className="text-4xl md:text-5xl font-bold mt-2 mb-4">
               {product.name}
@@ -136,7 +130,7 @@ const ProductDetail = () => {
       </div>
 
       <ImageModal
-        images={product.images || []}
+        images={product.product_images || []}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />

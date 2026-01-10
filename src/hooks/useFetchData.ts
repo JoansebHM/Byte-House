@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import type { Product } from "../types/product.type";
 
-function useFetchData(url: string) {
-  const [data, setData] = useState<Product[] | null>(null);
+
+function useFetchData<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -19,7 +19,7 @@ function useFetchData(url: string) {
         }
         const result = await response.text();
         const formatedResult = csvToJsonPro(result);
-        setData(formatedResult);
+        setData(formatedResult as T);
       } catch (err) {
         setError(err as Error);
       } finally {

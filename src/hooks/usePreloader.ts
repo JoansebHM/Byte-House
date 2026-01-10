@@ -7,7 +7,7 @@ export const usePreloader = (duration: number = 2000) => {
 
   useEffect(() => {
     if (hasSeenPreloader) {
-      setLoading(false);
+      // Already handled by initial state, but ensuring consistency
       return;
     }
 

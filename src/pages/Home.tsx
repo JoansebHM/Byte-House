@@ -7,65 +7,125 @@ import SidebarFilters from "../components/UI/SidebarFilters";
 import SearchBar from "../components/UI/SearchBar";
 import ReviewsSection from "../components/UI/ReviewsSection";
 import { Frown } from "lucide-react";
-import useFetchData from "../hooks/useFetchData";
-import { url } from "../data/constants";
-import type { Product } from "../types/product.type";
+import { supabase } from "../supabase/supabase";
+import type { PostgrestError } from "@supabase/supabase-js/dist/index.cjs";
+import { useProducts } from "../features/products/hooks/useProducts";
+import { useProduct } from "../features/products/hooks/useProduct";
 
 function Home() {
-  const { data, loading, error } = useFetchData<Product[]>(url);
+  // Estado para categorías
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  // Filter State
+  // Estados de filtros
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000000]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-  // Pagination State
+  // Estado de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  // Filtering Logic
-  const filteredProducts = useMemo(() => {
-    if (!data) return [];
+  // Fetch productos
+  const { data: products, error, isLoading: loading } = useProducts();
+  const {
+    data: singleProduct,
+    error: prodError,
+    isLoading,
+  } = useProduct(
+    "memoria-ram-patriot-viper-venom-48gb-2x24gb-ddr5-6000-mhz-cl"
+  );
 
-    return data.filter((product) => {
-      // 1. Search (Name, Description, Category)
+  console.log({ singleProduct });
+  console.log({ products });
+
+  // Fetch categorías
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const { data, error } = (await supabase
+          .from("categories")
+          .select()) as {
+          data: Category[];
+          error: PostgrestError | null;
+        };
+
+        if (error) {
+          console.error("Error fetching categories:", error);
+        } else if (data && data.length > 0) {
+          setCategories(data);
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
+  // Lógica de filtrado
+  const filteredProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+
+    return products.filter((product) => {
+      // 1. Búsqueda por nombre, descripción o categoría
       const term = searchTerm.toLowerCase();
       const matchesSearch =
         product.name.toLowerCase().includes(term) ||
-        product.description.toLowerCase().includes(term) ||
-        product.category.toLowerCase().includes(term);
+        product.description?.toLowerCase().includes(term) ||
+        product.categories.name.toLowerCase().includes(term);
 
       if (!matchesSearch) return false;
 
-      // 2. Category
-      if (selectedCategory && product.category !== selectedCategory) {
+      // 2. Filtro por categoría
+      if (selectedCategory && product.categories.name !== selectedCategory) {
         return false;
       }
 
-      // 3. Price
+      // 3. Filtro por precio
       if (product.price < priceRange[0] || product.price > priceRange[1]) {
         return false;
       }
 
-      // 4. Brands
+      // 4. Filtro por marca
       if (
         selectedBrands.length > 0 &&
-        !selectedBrands.includes(product.brand)
+        !selectedBrands.includes(product.brands.name)
       ) {
         return false;
       }
 
       return true;
     });
-  }, [data, searchTerm, selectedCategory, priceRange, selectedBrands]);
+  }, [products, searchTerm, selectedCategory, priceRange, selectedBrands]);
 
-  // Reset pagination when filters change
-  useEffect(() => {
+  // Handlers para filtros
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, priceRange, selectedBrands]);
+  };
 
-  // Pagination Logic
+  const handleCategoryChange = (val: string | null) => {
+    setSelectedCategory(val);
+    setCurrentPage(1);
+  };
+
+  const handlePriceChange = (val: [number, number]) => {
+    setPriceRange(val);
+    setCurrentPage(1);
+  };
+
+  const handleBrandChange = (brand: string) => {
+    setSelectedBrands((prev) => {
+      const newState = prev.includes(brand)
+        ? prev.filter((b) => b !== brand)
+        : [...prev, brand];
+      setCurrentPage(1);
+      return newState;
+    });
+  };
+
+  // Lógica de paginación
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -108,21 +168,18 @@ function Home() {
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
         <SidebarFilters
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={handleCategoryChange}
           priceRange={priceRange}
-          onPriceChange={setPriceRange}
+          onPriceChange={handlePriceChange}
           selectedBrands={selectedBrands}
-          onToggleBrand={(brand) => {
-            setSelectedBrands((prev) =>
-              prev.includes(brand)
-                ? prev.filter((b) => b !== brand)
-                : [...prev, brand]
-            );
-          }}
+          onToggleBrand={handleBrandChange}
         />
 
         <div className="flex-grow">
-          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+          />
 
           {/* Results */}
           {paginatedProducts.length > 0 ? (
@@ -139,7 +196,7 @@ function Home() {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
+                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover: text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
                   >
                     PREV
                   </button>
@@ -149,7 +206,7 @@ function Home() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
+                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark: hover:text-black transition-colors disabled:opacity-50 disabled: cursor-not-allowed disabled:hover:bg-transparent disabled:hover: text-inherit"
                   >
                     NEXT
                   </button>
@@ -170,10 +227,11 @@ function Home() {
               </p>
               <button
                 onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory(null);
-                  setPriceRange([0, 3000]);
+                  handleSearchChange("");
+                  handleCategoryChange(null);
+                  handlePriceChange([0, 5000000]);
                   setSelectedBrands([]);
+                  setCurrentPage(1);
                 }}
                 className="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
               >
