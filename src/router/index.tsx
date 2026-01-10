@@ -7,6 +7,7 @@ import ProductDetail from "../pages/ProductDetail";
 import Login from "../pages/Login";
 import NotFound from "../pages/NotFound";
 import Dashboard from "../pages/Dashboard";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 function Index() {
   return (
@@ -18,7 +19,9 @@ function Index() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>{" "}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

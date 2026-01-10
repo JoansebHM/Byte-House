@@ -1,26 +1,37 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSettings } from "../context/SettingsContext";
-import { Eye, EyeOff, SendToBack, StepBack } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, StepBack } from "lucide-react";
+import Button from "../components/UI/Button";
+import { supabase } from "../supabase/supabase";
+import toast from "react-hot-toast";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { darkMode } = useSettings();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/dashboard");
-    }, 1000);
+    setIsLoading(false);
+
+    if (error) {
+      toast.error("Error al iniciar sesión: " + error.message, {
+        duration: 4000,
+      });
+      return;
+    }
+
+    toast.success("¡Sesión iniciada con éxito!", { duration: 3000 });
+    navigate("/dashboard");
   };
 
   return (
@@ -36,7 +47,7 @@ function Login() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold tracking-tighter font-bitcount font-normal text-black dark:text-white mb-2">
+          <h1 className="text-4xl tracking-tighter font-bitcount font-normal text-black dark:text-white mb-2">
             BYTE HOUSE
           </h1>
           <p className="text-gray-600 dark:text-gray-400 font-inconsolata">
@@ -96,13 +107,11 @@ function Login() {
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
+              label={isLoading ? "INICIANDO SESIÓN..." : "INICIAR SESIÓN"}
               type="submit"
               disabled={isLoading}
-              className="cursor-pointer w-full py-3 px-4 bg-black dark:bg-white text-white dark:text-black font-inconsolata font-bold hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-black dark:border-white"
-            >
-              {isLoading ? "INICIANDO SESIÓN..." : "INICIAR SESIÓN"}
-            </button>
+            />
           </div>
         </form>
       </div>

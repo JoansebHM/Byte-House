@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import ProductCard from "../components/UI/ProductCard";
 import FloatingWhatsApp from "../components/UI/FloatingWhatsApp";
 import Navbar from "../components/layout/Navbar";
@@ -6,16 +6,10 @@ import Footer from "../components/layout/Footer";
 import SidebarFilters from "../components/UI/SidebarFilters";
 import SearchBar from "../components/UI/SearchBar";
 import ReviewsSection from "../components/UI/ReviewsSection";
-import { Frown } from "lucide-react";
-import { supabase } from "../supabase/supabase";
-import type { PostgrestError } from "@supabase/supabase-js/dist/index.cjs";
 import { useProducts } from "../features/products/hooks/useProducts";
-import { useProduct } from "../features/products/hooks/useProduct";
+import NotFoundProd from "../components/UI/NotFoundProd";
 
 function Home() {
-  // Estado para categorías
-  const [categories, setCategories] = useState<Category[]>([]);
-
   // Estados de filtros
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -27,58 +21,27 @@ function Home() {
   const ITEMS_PER_PAGE = 10;
 
   // Fetch productos
-  const { data: products, error, isLoading: loading } = useProducts();
   const {
-    data: singleProduct,
-    error: prodError,
-    isLoading,
-  } = useProduct(
-    "memoria-ram-patriot-viper-venom-48gb-2x24gb-ddr5-6000-mhz-cl"
-  );
-
-  console.log({ singleProduct });
-  console.log({ products });
-
-  // Fetch categorías
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const { data, error } = (await supabase
-          .from("categories")
-          .select()) as {
-          data: Category[];
-          error: PostgrestError | null;
-        };
-
-        if (error) {
-          console.error("Error fetching categories:", error);
-        } else if (data && data.length > 0) {
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    }
-
-    fetchCategories();
-  }, []);
+    data: products,
+    error: productsError,
+    isLoading: productsLoading,
+  } = useProducts();
 
   // Lógica de filtrado
   const filteredProducts = useMemo(() => {
     if (!products || products.length === 0) return [];
 
     return products.filter((product) => {
-      // 1. Búsqueda por nombre, descripción o categoría
       const term = searchTerm.toLowerCase();
       const matchesSearch =
         product.name.toLowerCase().includes(term) ||
         product.description?.toLowerCase().includes(term) ||
-        product.categories.name.toLowerCase().includes(term);
+        product.categories?.name?.toLowerCase().includes(term);
 
       if (!matchesSearch) return false;
 
       // 2. Filtro por categoría
-      if (selectedCategory && product.categories.name !== selectedCategory) {
+      if (selectedCategory && product.categories?.name !== selectedCategory) {
         return false;
       }
 
@@ -90,7 +53,7 @@ function Home() {
       // 4. Filtro por marca
       if (
         selectedBrands.length > 0 &&
-        !selectedBrands.includes(product.brands.name)
+        !selectedBrands.includes(product.brands?.name)
       ) {
         return false;
       }
@@ -139,7 +102,7 @@ function Home() {
     }
   };
 
-  if (loading) {
+  if (productsLoading) {
     return (
       <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-black dark:border-white"></div>
@@ -147,12 +110,12 @@ function Home() {
     );
   }
 
-  if (error) {
+  if (productsError) {
     return (
       <div className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white font-inconsolata flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Error loading products</h2>
-          <p className="text-gray-500">{error.message}</p>
+          <p className="text-gray-500">{productsError?.message}</p>
         </div>
       </div>
     );
@@ -165,7 +128,7 @@ function Home() {
       <FloatingWhatsApp />
 
       {/* Content */}
-      <main className="flex-grow container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+      <main className="grow container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
         <SidebarFilters
           selectedCategory={selectedCategory}
           onSelectCategory={handleCategoryChange}
@@ -175,7 +138,7 @@ function Home() {
           onToggleBrand={handleBrandChange}
         />
 
-        <div className="flex-grow">
+        <div className="grow">
           <SearchBar
             searchTerm={searchTerm}
             onSearchChange={handleSearchChange}
@@ -198,7 +161,7 @@ function Home() {
                     disabled={currentPage === 1}
                     className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover: text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
                   >
-                    PREV
+                    ANTERIOR
                   </button>
                   <span className="font-bold">
                     {currentPage} / {totalPages}
@@ -206,38 +169,24 @@ function Home() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark: hover:text-black transition-colors disabled:opacity-50 disabled: cursor-not-allowed disabled:hover:bg-transparent disabled:hover: text-inherit"
+                    className="px-4 py-2 border border-black dark:border-white font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
                   >
-                    NEXT
+                    SIGUIENTE
                   </button>
                 </div>
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-black dark:border-white border-dashed">
-              <Frown size={64} className="mb-4 text-gray-400" />
-              <h3 className="text-2xl font-bold mb-2">
-                No se encontraron productos
-              </h3>
-              <p className="text-gray-500 max-w-md">
-                Intentaste buscar "{searchTerm}" en{" "}
-                {selectedCategory || "todas las categorías"} y rango de precios
-                ${priceRange[0]} - ${priceRange[1]}. Prueba con otros términos o
-                limpia los filtros.
-              </p>
-              <button
-                onClick={() => {
-                  handleSearchChange("");
-                  handleCategoryChange(null);
-                  handlePriceChange([0, 5000000]);
-                  setSelectedBrands([]);
-                  setCurrentPage(1);
-                }}
-                className="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-              >
-                LIMPIAR FILTROS
-              </button>
-            </div>
+            <NotFoundProd
+              searchTerm={searchTerm}
+              selectedCategory={selectedCategory}
+              priceRange={priceRange}
+              handleSearchChange={handleSearchChange}
+              handleCategoryChange={handleCategoryChange}
+              handlePriceChange={handlePriceChange}
+              setSelectedBrands={setSelectedBrands}
+              setCurrentPage={setCurrentPage}
+            />
           )}
         </div>
       </main>

@@ -1,6 +1,8 @@
-import { CATEGORIES, BRANDS } from "../../data/mockData";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useCategories } from "../../features/categories/hooks/useCategories";
+import PriceRangeSelector from "./PriceRangeSelector";
+import { useBrands } from "../../features/brands/hooks/useBrands";
 import Button from "./Button";
 
 interface SidebarFiltersProps {
@@ -25,51 +27,41 @@ const SidebarFilters = ({
   const [localMin, setLocalMin] = useState(priceRange[0]);
   const [localMax, setLocalMax] = useState(priceRange[1]);
 
-  // Update local state when props change
+  const {
+    data: categories,
+    error: categoriesError,
+    isLoading: categoriesLoading,
+  } = useCategories();
+
+  const {
+    data: brands,
+    error: brandsError,
+    isLoading: brandsLoading,
+  } = useBrands();
+
   useEffect(() => {
     setLocalMin(priceRange[0]);
     setLocalMax(priceRange[1]);
   }, [priceRange]);
 
-  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Math.min(Number(e.target.value), localMax - 500000);
-    setLocalMin(val);
-    onPriceChange([val, localMax]);
+  const onClearFilters = () => {
+    onSelectCategory(null);
+    onPriceChange([min, max]);
+    selectedBrands.forEach((brand) => onToggleBrand(brand));
   };
 
-  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Math.max(Number(e.target.value), localMin + 500000);
-    setLocalMax(val);
-    onPriceChange([localMin, val]);
-  };
+  if (categoriesLoading || brandsLoading) {
+    return <div>Loading filters...</div>;
+  }
 
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!trackRef.current) return;
-    const rect = trackRef.current.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-
-    // Clamp percentage 0-1
-    const p = Math.max(0, Math.min(1, percent));
-    const val = Math.round(min + p * (max - min));
-
-    // Determine closest thumb
-    const distMin = Math.abs(val - localMin);
-    const distMax = Math.abs(val - localMax);
-
-    if (distMin < distMax) {
-      // Move Min
-      const newVal = Math.min(val, localMax - 500000);
-      setLocalMin(newVal);
-      onPriceChange([newVal, localMax]);
-    } else {
-      // Move Max
-      const newVal = Math.max(val, localMin + 500000);
-      setLocalMax(newVal);
-      onPriceChange([localMin, newVal]);
-    }
-  };
+  if (categoriesError || brandsError) {
+    return (
+      <div>
+        Error loading filters:{" "}
+        {categoriesError?.message || brandsError?.message}
+      </div>
+    );
+  }
 
   const FilterContent = () => (
     <div className="space-y-8">
@@ -88,17 +80,17 @@ const SidebarFilters = ({
           >
             TODAS
           </button>
-          {CATEGORIES.map((cat) => (
+          {categories?.map((cat) => (
             <button
-              key={cat}
-              onClick={() => onSelectCategory(cat)}
+              key={cat.id}
+              onClick={() => onSelectCategory(cat.name)}
               className={`cursor-pointer text-left py-2 px-2 transition-colors uppercase font-bold text-sm ${
-                selectedCategory === cat
+                selectedCategory === cat.name
                   ? "bg-black text-white dark:bg-white dark:text-black"
                   : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
               }`}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
@@ -107,87 +99,30 @@ const SidebarFilters = ({
         <h3 className="font-bold text-xl mb-4 border-b border-black dark:border-white pb-2">
           RANGO DE PRECIO
         </h3>
-        <div className="space-y-4">
-          {/* Input Mínimo */}
-          <div>
-            <label className="block font-bold text-sm mb-2 uppercase">
-              Mínimo
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-sm">
-                $
-              </span>
-              <input
-                type="text"
-                // value={formatDisplayValue(localMin, isMinFocused)}
-                // onChange={handleMinInputChange}
-                // onFocus={() => setIsMinFocused(true)}
-                // onBlur={handleMinBlur}
-                // onKeyPress={handleMinKeyPress}
-                className="w-full pl-7 pr-3 py-2 border-2 border-black dark:border-white bg-white dark:bg-black text-black dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                placeholder="0"
-              />
-            </div>
-          </div>
-
-          {/* Input Máximo */}
-          <div>
-            <label className="block font-bold text-sm mb-2 uppercase">
-              Máximo
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-sm">
-                $
-              </span>
-              <input
-                type="text"
-                // value={formatDisplayValue(localMax, isMaxFocused)}
-                // onChange={handleMaxInputChange}
-                // onFocus={() => setIsMaxFocused(true)}
-                // onBlur={handleMaxBlur}
-                // onKeyPress={handleMaxKeyPress}
-                className="w-full pl-7 pr-3 py-2 border-2 border-black dark:border-white bg-white dark:bg-black text-black dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-black dark:focus: ring-white"
-                placeholder="5000000"
-              />
-            </div>
-          </div>
-
-          {/* Botón para aplicar filtro */}
-          <Button
-            label="APLICAR FILTROS"
-            onClick={() => {
-              // handleMinBlur();
-              // handleMaxBlur();
-            }}
-          />
-          {/* <button
-            onClick={() => {
-              // handleMinBlur();
-              // handleMaxBlur();
-            }}
-            className="cursor-pointer w-full py-2 bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-sm hover:opacity-80 transition-opacity"
-          >
-            Aplicar Filtro
-          </button> */}
-        </div>
+        <PriceRangeSelector
+          minPrice={min}
+          maxPrice={max}
+          priceRange={[localMin, localMax]}
+          onPriceChange={onPriceChange}
+        />
       </div>
       <div>
         <h3 className="font-bold text-xl mb-4 border-b border-black dark:border-white pb-2">
           MARCAS
         </h3>
         <div className="space-y-2">
-          {BRANDS.map((brand) => (
+          {brands?.map((brand) => (
             <label
-              key={brand}
+              key={brand.id}
               className="flex items-center gap-2 cursor-pointer"
             >
               <input
                 type="checkbox"
                 className="accent-black dark:accent-white h-4 w-4"
-                checked={selectedBrands.includes(brand)}
-                onChange={() => onToggleBrand(brand)}
+                checked={selectedBrands.includes(brand.name)}
+                onChange={() => onToggleBrand(brand.name)}
               />
-              <span className="font-bold text-sm uppercase">{brand}</span>
+              <span className="font-bold text-sm uppercase">{brand.name}</span>
             </label>
           ))}
         </div>
@@ -213,9 +148,11 @@ const SidebarFilters = ({
         </details>
       </div>
 
-      {/* Desktop View - Always Open */}
       <div className="hidden md:block">
         <FilterContent />
+      </div>
+      <div className="mt-4">
+        <Button label="LIMPIAR FILTROS" onClick={onClearFilters} />
       </div>
     </aside>
   );

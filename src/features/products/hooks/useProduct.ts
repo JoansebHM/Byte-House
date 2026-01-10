@@ -13,7 +13,7 @@ export const useProduct = (slug: string) => {
       if (!response.data) {
         throw new Error("Product not found");
       }
-      return response.data[0];
+      return response.data;
     },
   });
 };

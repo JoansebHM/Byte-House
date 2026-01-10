@@ -10,7 +10,7 @@ const Header = () => {
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full">
                     <User size={18} className="text-black dark:text-white" />
                     <span className="font-bold font-inconsolata text-sm text-black dark:text-white">
-                        ADMIN
+                        Santi Bedoya
                     </span>
                 </div>
             </div>

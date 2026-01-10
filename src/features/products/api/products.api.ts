@@ -50,7 +50,8 @@ export const getProductBySlug = async (slug: string) => {
     `
     )
     .eq("slug", slug)
-    .eq("is_active", true)) as {
+    .eq("is_active", true)
+    .single()) as {
     data: ProductType | null;
     error: PostgrestError | null;
   };
