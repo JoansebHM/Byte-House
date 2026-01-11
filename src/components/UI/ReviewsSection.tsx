@@ -1,4 +1,4 @@
-import { Star, Camera } from "lucide-react";
+import { Camera, Star } from "lucide-react";
 import { useState } from "react";
 import ReviewModal from "./ReviewModal";
 import { useReviews } from "../../features/reviews/hooks/useReviews";
@@ -38,11 +38,11 @@ const ReviewsSection = () => {
               onClick={() => setSelectedReview(review)}
               className="w-[300px] md:w-[400px] mx-4 p-6 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 group cursor-pointer shrink-0 relative"
             >
-              {/* {review.images && review.images.length > 0 && (
+              {review.reviews_images && review.reviews_images.length > 0 && (
                 <div className="absolute top-4 right-4 text-gray-400 group-hover:text-white dark:group-hover:text-black">
                   <Camera size={20} />
                 </div>
-              )} */}
+              )}
 
               <div className="flex gap-1 mb-4 text-black dark:text-white group-hover:text-white dark:group-hover:text-black">
                 {[...Array(5)].map((_, i) => (

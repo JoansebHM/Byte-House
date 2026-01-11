@@ -9,7 +9,6 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
 
-  const mainImage = product.product_images.find((image) => image.is_main);
 
   return (
     <div
@@ -18,7 +17,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
     >
       <div className="relative aspect-square overflow-hidden mb-4 border border-black dark:border-white">
         <img
-          src={mainImage ? mainImage.image_url : ""}
+          src={
+            product.product_images.length > 0
+              ? product.product_images[0].image_url
+              : ""
+          }
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
         />

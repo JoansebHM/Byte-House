@@ -3,7 +3,13 @@ import { supabase } from "../../../supabase/supabase";
 import type { ReviewsType } from "../types/review.type";
 
 export const getReviews = async () => {
-  const { data, error } = (await supabase.from("reviews").select("*")) as {
+  const { data, error } = (await supabase.from("reviews").select(`
+    *,
+    reviews_images (
+        id,
+        image_url
+    )
+    `)) as {
     data: ReviewsType | null;
     error: PostgrestError | null;
   };

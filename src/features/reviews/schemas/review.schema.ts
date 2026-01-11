@@ -7,6 +7,12 @@ export const ReviewSchema = object({
   description: string(),
   user_name: string(),
   approved: boolean(),
+  reviews_images: array(
+    object({
+      id: number(),
+      image_url: string(),
+    })
+  ),
 });
 
 export const ReviewsSchema = array(ReviewSchema);
