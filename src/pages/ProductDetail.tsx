@@ -167,7 +167,7 @@ const ProductDetail = () => {
               {product.name}
             </h1>
             <p className="text-3xl font-bold border-b border-black dark:border-white pb-4 inline-block">
-              ${product.price}
+              ${product.price.toLocaleString("es-CO")}
             </p>
           </div>
 

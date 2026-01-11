@@ -26,12 +26,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
         />
       </div>
       <div className="flex flex-col flex-1">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col items-start">
           <h3 className="font-inconsolata text-lg font-bold leading-tight text-black dark:text-white group-hover:text-white dark:group-hover:text-black line-clamp-3">
             {product.name}
           </h3>
-          <span className="font-inconsolata font-bold text-black dark:text-white group-hover:text-white dark:group-hover:text-black">
-            ${product.price}
+          <span className="text-xl font-inconsolata font-bold text-black dark:text-white group-hover:text-white dark:group-hover:text-black">
+            ${product.price.toLocaleString("es-CO")}
           </span>
         </div>
         <p className="font-inconsolata text-sm text-gray-500 group-hover:text-gray-300 dark:text-gray-400 dark:group-hover:text-black line-clamp-2 mb-auto">
