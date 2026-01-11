@@ -20,20 +20,20 @@ const ReviewModal = ({ review, onClose }: ReviewModalProps) => {
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // if (review.images) {
-    //   setCurrentImageIndex((prev) =>
-    //     prev === (review.images?.length || 0) - 1 ? 0 : prev + 1
-    //   );
-    // }
+    if (review.reviews_images) {
+      setCurrentImageIndex((prev) =>
+        prev === (review.reviews_images?.length || 0) - 1 ? 0 : prev + 1
+      );
+    }
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // if (review.images) {
-    //   setCurrentImageIndex((prev) =>
-    //     prev === 0 ? (review.images?.length || 0) - 1 : prev - 1
-    //   );
-    // }
+    if (review.reviews_images) {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? (review.reviews_images?.length || 0) - 1 : prev - 1
+      );
+    }
   };
 
   return (
@@ -85,19 +85,19 @@ const ReviewModal = ({ review, onClose }: ReviewModalProps) => {
             "{review.description}"
           </p>
 
-          {/* {review.images && review.images.length > 0 && (
+          {review.reviews_images && review.reviews_images.length > 0 && (
             <div className="mt-4">
               <h4 className="font-bold mb-3 text-sm uppercase tracking-wider text-black dark:text-white">
                 Evidencia del Producto:
               </h4>
               <div className="relative aspect-video bg-gray-100 dark:bg-gray-900 border border-black dark:border-white group">
                 <img
-                  src={review.images[currentImageIndex]}
+                  src={review.reviews_images[currentImageIndex].image_url}
                   alt={`Evidence ${currentImageIndex + 1}`}
                   className="w-full h-full object-contain"
                 />
 
-                {review.images.length > 1 && (
+                {review.reviews_images.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
@@ -112,7 +112,7 @@ const ReviewModal = ({ review, onClose }: ReviewModalProps) => {
                       <ChevronRight size={24} />
                     </button>
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-                      {review.images.map((_, idx) => (
+                      {review.reviews_images.map((_, idx) => (
                         <div
                           key={idx}
                           className={`w-2 h-2 rounded-full ${
@@ -127,7 +127,7 @@ const ReviewModal = ({ review, onClose }: ReviewModalProps) => {
                 )}
               </div>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>
