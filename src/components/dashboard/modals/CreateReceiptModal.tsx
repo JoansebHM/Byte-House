@@ -93,7 +93,7 @@ const ReceiptModal = ({ onClose, receipt }: ReceiptModalProps) => {
         await createReceiptMutation.mutateAsync(formData);
         toast.success("Receipt created successfully!");
       }
-      //   onClose();
+      onClose();
     } catch {
       toast.error(
         receipt ? "Failed to update receipt" : "Failed to create receipt",
