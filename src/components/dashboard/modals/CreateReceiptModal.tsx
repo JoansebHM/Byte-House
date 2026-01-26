@@ -77,6 +77,10 @@ const ReceiptModal = ({ onClose, receipt }: ReceiptModalProps) => {
   };
 
   const onSubmit = async (formData: FormData) => {
+    formData.products.forEach((product) => {
+      product.price = Number(product.price);
+      product.quantity = Number(product.quantity);
+    });
     setIsSubmitting(true);
     try {
       if (receipt) {
@@ -89,7 +93,7 @@ const ReceiptModal = ({ onClose, receipt }: ReceiptModalProps) => {
         await createReceiptMutation.mutateAsync(formData);
         toast.success("Receipt created successfully!");
       }
-      onClose();
+      //   onClose();
     } catch {
       toast.error(
         receipt ? "Failed to update receipt" : "Failed to create receipt",
