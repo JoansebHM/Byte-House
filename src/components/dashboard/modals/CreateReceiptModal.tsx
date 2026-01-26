@@ -84,14 +84,25 @@ const ReceiptModal = ({ onClose, receipt }: ReceiptModalProps) => {
     setIsSubmitting(true);
     try {
       if (receipt) {
-        await updateReceiptMutation.mutateAsync({
-          id: receipt.id,
-          data: formData,
-        });
-        toast.success("Receipt updated successfully!");
+        await updateReceiptMutation.mutateAsync(
+          {
+            id: receipt.id,
+            data: formData,
+          },
+          {
+            onSuccess: () => {
+              onClose();
+              toast.success("Receipt updated successfully!");
+            },
+          },
+        );
       } else {
-        await createReceiptMutation.mutateAsync(formData);
-        toast.success("Receipt created successfully!");
+        await createReceiptMutation.mutateAsync(formData, {
+          onSuccess: () => {
+            onClose();
+            toast.success("Receipt created successfully!");
+          },
+        });
       }
       onClose();
     } catch {
