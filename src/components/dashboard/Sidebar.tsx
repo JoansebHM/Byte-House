@@ -9,6 +9,7 @@ import {
   Sticker,
   FolderDot,
   Star,
+  Receipt,
 } from "lucide-react";
 import LogoutButton from "../UI/LogoutButton";
 import { useSettings } from "../../context/SettingsContext";
@@ -45,6 +46,11 @@ const Sidebar = ({
       id: "reviews",
       label: "RESEÑAS",
       icon: Star,
+    },
+    {
+      id: "receipts",
+      label: "RECIBOS",
+      icon: Receipt,
     },
   ];
 

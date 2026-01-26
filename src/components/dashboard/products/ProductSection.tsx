@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Package,
   Plus,
@@ -24,21 +24,51 @@ const ProductSection = () => {
   } = useProducts();
 
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // Filter & Pagination State
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Pagination Logic
-  const totalPages = Math.ceil((productsData?.length ?? 0) / ITEMS_PER_PAGE);
-  const currentProducts = productsData?.slice(
+  const filteredAndSortedProducts = useMemo(() => {
+    if (!productsData) return [];
+
+    const result = productsData.filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
+    result.sort((a, b) => {
+      switch (sortOption) {
+        case "recent":
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
+        case "price-desc":
+          return b.price - a.price;
+        case "price-asc":
+          return a.price - b.price;
+        case "name-asc":
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [productsData, searchTerm, sortOption]);
+
+  const totalPages = Math.ceil(
+    filteredAndSortedProducts.length / ITEMS_PER_PAGE,
+  );
+  const currentProducts = filteredAndSortedProducts.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   const handleEdit = (product: ProductType) => {
@@ -55,13 +85,18 @@ const ProductSection = () => {
     setCurrentPage(page);
   };
 
-  if (productsLoading) {
-    return <div>Cargando productos...</div>;
-  }
-
-  if (productsError) {
-    return <div>Error al cargar productos: {productsError.message}</div>;
-  }
+  if (productsLoading)
+    return (
+      <div className="p-10 text-center font-bitcount">
+        Cargando productos...
+      </div>
+    );
+  if (productsError)
+    return (
+      <div className="p-10 text-center text-red-500">
+        Error: {productsError.message}
+      </div>
+    );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 font-inconsolata">
@@ -71,7 +106,8 @@ const ProductSection = () => {
             PRODUCTOS
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Gestiona tu inventario ({productsData?.length ?? 0} total)
+            Gestiona tu inventario ({filteredAndSortedProducts.length}{" "}
+            filtrados)
           </p>
         </div>
 
@@ -87,7 +123,6 @@ const ProductSection = () => {
         </button>
       </div>
 
-      {/* Filters Bar */}
       <div className="flex flex-col md:flex-row gap-4 p-4 border border-black dark:border-white bg-gray-50 dark:bg-gray-900/30">
         <div className="flex-1 relative">
           <Search
@@ -110,7 +145,10 @@ const ProductSection = () => {
           <Filter size={20} className="text-black dark:text-white" />
           <select
             value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+            onChange={(e) => {
+              setSortOption(e.target.value);
+              setCurrentPage(1);
+            }}
             className="flex-1 p-2 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white focus:outline-none cursor-pointer"
           >
             <option value="recent">Más Recientes</option>
@@ -122,8 +160,7 @@ const ProductSection = () => {
         </div>
       </div>
 
-      {/* Product List */}
-      {currentProducts?.length === 0 ? (
+      {currentProducts.length === 0 ? (
         <div className="min-h-[300px] flex items-center justify-center border border-dashed border-gray-400 rounded-lg p-12">
           <div className="text-center">
             <Package size={48} className="mx-auto mb-4 text-gray-400" />
@@ -137,7 +174,7 @@ const ProductSection = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {currentProducts?.map((product) => (
+          {currentProducts.map((product) => (
             <div
               key={product.id}
               className="p-4 border border-black dark:border-white bg-white dark:bg-black hover:shadow-lg transition-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -155,7 +192,7 @@ const ProductSection = () => {
                   </p>
                   <div className="flex gap-4 mt-1 items-center">
                     <span className="font-bold text-black dark:text-white">
-                      ${product.price}
+                      ${Number(product.price).toLocaleString("es-CO")}
                     </span>
                     <span className="text-gray-500 text-xs">
                       Stock: {product.stock}
@@ -171,14 +208,12 @@ const ProductSection = () => {
                 <button
                   onClick={() => handleEdit(product)}
                   className="p-2 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 rounded transition-colors"
-                  title="Editar"
                 >
                   <Edit size={18} />
                 </button>
                 <button
                   onClick={() => handleDelete(product)}
                   className="p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded transition-colors"
-                  title="Eliminar"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -188,7 +223,6 @@ const ProductSection = () => {
         </div>
       )}
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8 pt-4 border-t border-gray-200 dark:border-gray-800">
           <button
@@ -236,10 +270,7 @@ const ProductSection = () => {
         <DeleteConfirmationModal
           onClose={() => setIsDeleteModalOpen(false)}
           table="products"
-          data={{
-            id: selectedProduct.id,
-            name: selectedProduct.name,
-          }}
+          data={{ id: selectedProduct.id, name: selectedProduct.name }}
         />
       )}
     </div>
